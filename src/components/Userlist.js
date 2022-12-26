@@ -96,7 +96,11 @@ const Userlist = () => {
           {userList.map((item) => (
             <div key={item.uid} className="flex items-center gap-x-3 py-5 ">
               <div className="w-[50px] h-[50px]">
-                <img className="rounded-full w-full" src={item.photoURL} />
+                <img
+                  className="rounded-full w-full"
+                  src={item.photoURL}
+                  loading="lazy"
+                />
               </div>
               <h3 className="font-pop text-sm md:text-lg  text-gray-800 font-bold">
                 {item.username}
