@@ -36,7 +36,7 @@ const Grouplist = () => {
   const [groupNameError, setGroupNameError] = useState("");
   const [groupTagError, setGroupTagError] = useState("");
   const [groupList, setGroupList] = useState([]);
-  const [image, setImage] = useState();
+  const [image, setImage] = useState("images/profile.png");
   const [gimage, setGImage] = useState();
   const [cropData, setCropData] = useState("#");
   const [cropper, setCropper] = useState();
@@ -96,6 +96,7 @@ const Grouplist = () => {
               groupname: gname,
               grouptags: groupTag,
               adminid: data.uid,
+              adminemail: data.email,
               adminname: data.displayName,
               groupimage: downloadURL,
             }).then(() => {
@@ -126,6 +127,8 @@ const Grouplist = () => {
       getCropData();
     }
   };
+
+  console.log(groupList);
   return (
     <div className="w-full shadow-all p-5 rounded h-[45vh] overflow-y-auto scrolbar">
       <h3 className="font-pop text-[20px] md:text-[24px] text-gray-700 font-bold relative">
@@ -275,6 +278,9 @@ const Grouplist = () => {
                   </h3>
                   <h3 className="font-pop text-sm md:text-sm  text-gray-500 font-semibold">
                     {item.adminname}
+                  </h3>
+                  <h3 className="font-pop text-sm md:text-sm  text-gray-500 font-semibold">
+                    {item.adminemail}
                   </h3>
 
                   <p>{item.grouptags}</p>

@@ -142,7 +142,7 @@ const Sidbar = () => {
                   </div>
                 ) : (
                   <div className="w-[80px] h-[80px] mx-auto my-4 overflow-hidden rounded-full">
-                    <img src={data.photoURL} />
+                    <img src={"images/profile.png"} />
                   </div>
                 )}
                 <div className="mb-4">
