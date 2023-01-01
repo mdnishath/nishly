@@ -12,7 +12,7 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { userData } from "../slices/userSlice";
 import { getAuth, updateProfile, signOut } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import {
@@ -125,13 +125,15 @@ const Sidbar = () => {
     setCropper("");
   };
 
+  const active = "text-[40px] text-greenLight";
+  const inactive = "text-[40px] text-white";
+
   return (
     <>
       {show && (
         <div className=" absolute top-0 left-0 w-full h-screen bg-white z-40">
           <div className="flex h-screen justify-center items-center ">
             <div className="md:w-[600px] w-full ml-[100px] md:ml-0">
-              {" "}
               <div className=" bg-white p-5 rounded shadow-all">
                 <h3 className="font-pop font-bold text-black text-xl">
                   Update your profile picture
@@ -225,17 +227,29 @@ const Sidbar = () => {
             </button>
           </div>
           <button>
-            <BiHomeAlt
-              data-tip="Dashboard"
-              className=" text-[40px] text-greenLight"
-            />
+            <NavLink
+              to="/"
+              className={({ isActive }) => (isActive ? active : inactive)}
+            >
+              <BiHomeAlt data-tip="Dashboard" />
+            </NavLink>
           </button>
 
           <button>
-            <AiOutlineMessage className=" text-[40px] text-white" />
+            <NavLink
+              to="/message"
+              className={({ isActive }) => (isActive ? active : inactive)}
+            >
+              <AiOutlineMessage />
+            </NavLink>
           </button>
           <button>
-            <IoMdNotificationsOutline className=" text-[40px] text-white" />
+            <NavLink
+              to="/notification"
+              className={({ isActive }) => (isActive ? active : inactive)}
+            >
+              <IoMdNotificationsOutline />
+            </NavLink>
           </button>
         </div>
         <div className="flex flex-col items-center gap-y-5">

@@ -36,11 +36,26 @@ const Grouplist = () => {
   const [groupNameError, setGroupNameError] = useState("");
   const [groupTagError, setGroupTagError] = useState("");
   const [groupList, setGroupList] = useState([]);
+  const [groupGoinList, setGroupGoinList] = useState([]);
   const [image, setImage] = useState("images/profile.png");
   const [gimage, setGImage] = useState();
   const [cropData, setCropData] = useState("#");
   const [cropper, setCropper] = useState();
   const [imageUploadModal, setImageUploadModal] = useState(false);
+  const [blockList, setBlockList] = useState([]);
+
+  useEffect(() => {
+    onValue(dbRef(db, "blockList"), (snapshot) => {
+      const arr = [];
+      snapshot.forEach((item) => {
+        arr.push(item.val().receiverId);
+      });
+
+      setBlockList(arr);
+    });
+  }, []);
+
+  // console.log(blockList);
 
   //Create Group
   const handleCreateGroup = () => {
@@ -60,12 +75,16 @@ const Grouplist = () => {
     onValue(dbRef(db, "group"), (snapshot) => {
       const arr = [];
       snapshot.forEach((item) => {
+        console.log();
         arr.push({ ...item.val(), groupID: item.key });
       });
+
+      const newArray = arr.filter((item) => !item.adminid.includes(blockList));
 
       setGroupList(arr);
     });
   }, []);
+
   const handleImageUploadChange = (e) => {
     e.preventDefault();
     let files;
@@ -128,7 +147,37 @@ const Grouplist = () => {
     }
   };
 
+  const handleGroupJoinRequest = (item) => {
+    console.log(item);
+    set(push(dbRef(db, "groupJoinRequestList")), {
+      groupName: item.groupname,
+      groupID: item.groupID,
+      groupAdminID: item.adminid,
+      groupAdminName: item.adminname,
+      groupAdminEmail: item.adminemail,
+      groupImage: item.groupimage,
+      senderName: data.displayName,
+      senderID: data.uid,
+      senderEmail: data.email,
+      senderImage: data.photoURL,
+    });
+  };
+  useEffect(() => {
+    onValue(dbRef(db, "groupJoinRequestList"), (snapshot) => {
+      const arr = [];
+      snapshot.forEach((item) => {
+        // arr.push({ ...item.val(), joinID: item.key });
+        // console.log(item.val());
+        arr.push(item.val().groupAdminID + item.val().senderID);
+      });
+
+      setGroupGoinList(arr);
+    });
+  }, []);
+
   console.log(groupList);
+  console.log(blockList);
+
   return (
     <div className="w-full shadow-all p-5 rounded h-[45vh] overflow-y-auto scrolbar">
       <h3 className="font-pop text-[20px] md:text-[24px] text-gray-700 font-bold relative">
@@ -191,34 +240,18 @@ const Grouplist = () => {
                 />
               )}
               <br />
-              {
-                loading ? (
-                  <ThreeDots
-                    height="100"
-                    width="100"
-                    radius="9"
-                    color=" #5F35F5"
-                    ariaLabel="three-dots-loading"
-                    wrapperStyle={{}}
-                    wrapperClassName=""
-                    visible={true}
-                  />
-                ) : null
-                // <div className="flex justify-center space-x-2">
-                //   <button
-                //     onClick={handleUpload}
-                //     className="font-pop font-medium text-white bg-greenLight px-8 py-[4px] rounded-lg"
-                //   >
-                //     upload
-                //   </button>
-                //   <button
-                //     onClick={handleCancel}
-                //     className=" font-pop font-medium text-white bg-red-500 px-8 py-[4px] rounded-lg"
-                //   >
-                //     Cancel
-                //   </button>
-                // </div>
-              }
+              {loading ? (
+                <ThreeDots
+                  height="100"
+                  width="100"
+                  radius="9"
+                  color=" #5F35F5"
+                  ariaLabel="three-dots-loading"
+                  wrapperStyle={{}}
+                  wrapperClassName=""
+                  visible={true}
+                />
+              ) : null}
             </div>
           </div>
           <div className="mb-4">
@@ -288,10 +321,22 @@ const Grouplist = () => {
 
                 <div className="grow">
                   <div className="flex w-full justify-end">
-                    {/* <AiOutlineInfoCircle className="text-[30px] cursor-pointer" /> */}
-                    <button className="font-pop font-medium text-white bg-greenLight px-8 py-[4px] rounded-lg">
-                      Join
-                    </button>
+                    {item.adminid === data.uid ? (
+                      <button className="font-pop font-medium text-white bg-green-500 px-8 py-[4px] rounded-lg">
+                        Joined
+                      </button>
+                    ) : groupGoinList.includes(item.adminid + data.uid) ? (
+                      <button className="font-pop font-medium text-white bg-red-500 px-8 py-[4px] rounded-lg">
+                        Requested
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleGroupJoinRequest(item)}
+                        className="font-pop font-medium text-white bg-blue-500 px-8 py-[4px] rounded-lg"
+                      >
+                        Join
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -304,3 +349,20 @@ const Grouplist = () => {
 };
 
 export default Grouplist;
+// {data.uid === item.adminid ? (
+//   <button className="font-pop font-medium text-white bg-blue-500 px-8 py-[4px] rounded-lg">
+//     Joined
+//   </button>
+// ) : groupGoinList.includes(item.adminid + data.uid) ||
+//   groupGoinList.includes(data.uid + item.adminid) ? (
+//   <button className="font-pop font-medium text-white bg-red-500 px-8 py-[4px] rounded-lg">
+//     Requested
+//   </button>
+// ) : (
+//   <button
+//     onClick={() => handleGroupJoinRequest(item)}
+//     className="font-pop font-medium text-white bg-greenLight px-8 py-[4px] rounded-lg"
+//   >
+//     Join
+//   </button>
+// )}

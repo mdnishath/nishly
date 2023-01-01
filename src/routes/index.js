@@ -1,22 +1,23 @@
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+} from "react-router-dom";
+import Root from "../components/Root";
 import Home from "../pages/Home";
-import ErrorPage from "../pages/ErrorPage";
-import Signup from "../pages/Signup";
 import Login from "../pages/Login";
+import Message from "../pages/Message";
+import Notification from "../pages/Notification";
 
-export const routes = [
-  {
-    path: "/",
-    element: <Home />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "/signup",
-    element: <Signup />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "/login",
-    element: <Login />,
-    errorElement: <ErrorPage />,
-  },
-];
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/" element={<Root />}>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/message" element={<Message />} />
+      <Route path="/notification" element={<Notification />} />
+    </Route>
+  )
+);
+
+export default router;

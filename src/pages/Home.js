@@ -63,7 +63,6 @@ const Home = () => {
         />
       ) : (
         <div className="flex ">
-          <Sidbar />
           <div className="flex flex-col md:flex-row ml-[100px] p-5 w-full gap-x-10 gap-y-10">
             <div className=" md:w-2/6 flex flex-col gap-y-10">
               <Grouplist />
