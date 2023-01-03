@@ -70,7 +70,7 @@ const Mygroups = () => {
   };
 
   const addGroupMembers = (item) => {
-    // console.log(item);
+    console.log(item);
     set(push(ref(db, "groupmembers")), {
       groupName: item.groupName,
       groupAdminID: item.groupAdminID,
@@ -113,7 +113,7 @@ const Mygroups = () => {
   const deletFromGroup = (item) => {
     remove(ref(db, "groupmembers/" + item.key));
   };
-  console.log(groupMembers);
+  console.log(myGroups);
   return (
     <div className="w-full shadow-all p-5 rounded h-[45vh] overflow-y-auto scrolbar">
       <div className="flex justify-between gap-x-2 items-center relative">
@@ -194,10 +194,10 @@ const Mygroups = () => {
                     </div>
                     <div>
                       <h3 className="font-pop text-sm md:text-lg  text-gray-800 font-bold">
-                        {jn.groupname}
+                        {jn.senderName}
                       </h3>
 
-                      <p>{jn.senderName}</p>
+                      {/* <p></p> */}
                     </div>
 
                     <div className="grow">
@@ -222,8 +222,8 @@ const Mygroups = () => {
         </div>
       ) : (
         <div className="md:p-3 divide-y divide-slate-200">
-          {myGroups.map((item, index) => (
-            <div key={item.index}>
+          {myGroups.map((item) => (
+            <div key={item.groupID}>
               <div className="flex items-center gap-x-3 py-5 ">
                 <div className="w-[50px] h-[50px]">
                   <img

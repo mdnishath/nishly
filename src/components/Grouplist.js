@@ -9,6 +9,7 @@ import {
   set,
   push,
   update,
+  remove,
   ref as dbRef,
 } from "firebase/database";
 import { getAuth, updateProfile, signOut } from "firebase/auth";
@@ -18,6 +19,7 @@ import {
   getDownloadURL,
   ref,
 } from "firebase/storage";
+
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { userData } from "../slices/userSlice";
@@ -76,7 +78,7 @@ const Grouplist = () => {
     onValue(dbRef(db, "group"), (snapshot) => {
       const arr = [];
       snapshot.forEach((item) => {
-        console.log();
+        // console.log(item.val());
         arr.push({ ...item.val(), groupID: item.key });
       });
 
@@ -149,8 +151,8 @@ const Grouplist = () => {
   };
 
   const handleGroupJoinRequest = (item) => {
-    console.log(item);
-    set(push(dbRef(db, "groupJoinRequestList")), {
+    // console.log(item.groupID + data.uid);
+    set(dbRef(db, "groupJoinRequestList/" + item.groupID + data.uid), {
       groupName: item.groupname,
       groupID: item.groupID,
       groupAdminID: item.adminid,
@@ -161,6 +163,7 @@ const Grouplist = () => {
       senderID: data.uid,
       senderEmail: data.email,
       senderImage: data.photoURL,
+      requestID: item.groupID + item.adminid,
     });
   };
   useEffect(() => {
@@ -200,7 +203,12 @@ const Grouplist = () => {
     });
   }, []);
 
-  console.log(groupadded);
+  const deletGroupRequest = (item, uid) => {
+    // console.log(item.groupID + uid);
+    remove(dbRef(db, "groupJoinRequestList/" + item.groupID + uid));
+  };
+
+  // console.log(groupadded);
 
   return (
     <div className="w-full shadow-all p-5 rounded h-[45vh] overflow-y-auto scrolbar">
@@ -347,14 +355,20 @@ const Grouplist = () => {
 
                 <div className="grow">
                   <div className="flex w-full justify-end">
-                    {groupadded.includes(item.groupID + data.uid) ||
-                    item.adminid === data.uid ? (
+                    {item.adminid === data.uid ? (
+                      <button className="font-pop font-medium text-white bg-orange-500 px-8 py-[4px] rounded-lg">
+                        Own
+                      </button>
+                    ) : groupadded.includes(item.groupID + data.uid) ? (
                       <button className="font-pop font-medium text-white bg-green-500 px-8 py-[4px] rounded-lg">
                         Joined
                       </button>
                     ) : groupGoinList.includes(item.groupID + data.uid) ? (
-                      <button className="font-pop font-medium text-white bg-red-500 px-8 py-[4px] rounded-lg">
-                        Requested
+                      <button
+                        onClick={() => deletGroupRequest(item, data.uid)}
+                        className="font-pop font-medium text-white bg-red-500 px-8 py-[4px] rounded-lg"
+                      >
+                        Cancle
                       </button>
                     ) : (
                       <button
