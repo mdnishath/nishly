@@ -175,9 +175,6 @@ const Grouplist = () => {
     });
   }, []);
 
-  console.log(groupList);
-  console.log(blockList);
-
   return (
     <div className="w-full shadow-all p-5 rounded h-[45vh] overflow-y-auto scrolbar">
       <h3 className="font-pop text-[20px] md:text-[24px] text-gray-700 font-bold relative">

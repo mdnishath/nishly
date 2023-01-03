@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BiDotsVerticalRounded, BiMinus } from "react-icons/bi";
+import { BsSearch } from "react-icons/bs";
 
 import { AiOutlinePlus, AiOutlineCheck } from "react-icons/ai";
 import { MdBlock } from "react-icons/md";
@@ -8,15 +9,20 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { userData } from "../slices/userSlice";
 import { getAuth, signOut } from "firebase/auth";
+import Search from "./Search";
+// import { useSelector } from "react-redux";
 
 const Userlist = () => {
   const auth = getAuth();
   const db = getDatabase();
   let data = useSelector((state) => state.userData.userInfo);
+  let src = useSelector((state) => state.filterData.data);
+  console.log(src);
   const dispatch = useDispatch();
 
   const [userList, setUserList] = useState([]);
   const [friendrequestList, setFriendrequestList] = useState([]);
+  // const [showform, setShowForm] = useState(false);
 
   const [friends, setFriends] = useState([]);
   const [blockList, setBlockList] = useState([]);
@@ -86,62 +92,154 @@ const Userlist = () => {
 
   return (
     <div className="w-full shadow-all p-5 rounded h-[45vh] overflow-y-auto scrolbar">
-      <h3 className="font-pop text-[20px] md:text-[24px] text-gray-700 font-bold relative">
-        User List
-        <BiDotsVerticalRounded className="text-[30px] absolute top-0 right-0" />
-      </h3>
+      <div className="flex justify-between gap-x-2 items-center">
+        <h3 className="font-pop text-[20px] md:text-[24px] text-gray-700 font-bold relative inline-block">
+          User List
+        </h3>
+        <Search obj={userList} />
+      </div>
 
       <div className="md:p-3 divide-y divide-slate-200">
-        <>
-          {userList.map((item) => (
-            <div key={item.uid} className="flex items-center gap-x-3 py-5 ">
-              <div className="w-[50px] h-[50px]">
-                <img
-                  className="rounded-full w-full"
-                  src={item.photoURL}
-                  loading="lazy"
-                />
-              </div>
-              <h3 className="font-pop text-sm md:text-lg  text-gray-800 font-bold">
-                {item.username}
-              </h3>
+        {src.length > 0
+          ? src.map((item) => (
+              <div key={item.uid} className="flex items-center gap-x-3 py-5 ">
+                <div className="w-[50px] h-[50px]">
+                  <img
+                    className="rounded-full w-full"
+                    src={item.photoURL}
+                    loading="lazy"
+                  />
+                </div>
+                <h3 className="font-pop text-sm md:text-lg  text-gray-800 font-bold">
+                  {item.username}
+                </h3>
 
-              <div className="grow">
-                <div className="flex w-full justify-end">
-                  {blockList.includes(item.uid + data.uid) ||
-                  blockList.includes(data.uid + item.uid) ? (
-                    <button className="font-pop font-medium text-white bg-red-500 px-[4px] py-[4px] rounded">
-                      <MdBlock />
-                    </button>
-                  ) : friends.includes(item.uid + data.uid) ||
-                    friends.includes(data.uid + item.uid) ? (
-                    <button className="font-pop font-medium text-white bg-blue-500 px-[4px] py-[4px] rounded">
-                      <AiOutlineCheck />
-                    </button>
-                  ) : friendrequestList.includes(item.uid + data.uid) ||
-                    friendrequestList.includes(data.uid + item.uid) ? (
-                    <button
-                      onClick={() => handleCancelFriendRequest(item)}
-                      className="font-pop font-medium text-white bg-red-500 px-[4px] py-[4px] rounded"
-                    >
-                      <BiMinus />
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleFriendRequest(item)}
-                      className="font-pop font-medium text-white bg-greenLight px-[4px] py-[4px] rounded"
-                    >
-                      <AiOutlinePlus />
-                    </button>
-                  )}
+                <div className="grow">
+                  <div className="flex w-full justify-end">
+                    {blockList.includes(item.uid + data.uid) ||
+                    blockList.includes(data.uid + item.uid) ? (
+                      <button className="font-pop font-medium text-white bg-red-500 px-[4px] py-[4px] rounded">
+                        <MdBlock />
+                      </button>
+                    ) : friends.includes(item.uid + data.uid) ||
+                      friends.includes(data.uid + item.uid) ? (
+                      <button className="font-pop font-medium text-white bg-blue-500 px-[4px] py-[4px] rounded">
+                        <AiOutlineCheck />
+                      </button>
+                    ) : friendrequestList.includes(item.uid + data.uid) ||
+                      friendrequestList.includes(data.uid + item.uid) ? (
+                      <button
+                        onClick={() => handleCancelFriendRequest(item)}
+                        className="font-pop font-medium text-white bg-red-500 px-[4px] py-[4px] rounded"
+                      >
+                        <BiMinus />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleFriendRequest(item)}
+                        className="font-pop font-medium text-white bg-greenLight px-[4px] py-[4px] rounded"
+                      >
+                        <AiOutlinePlus />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </>
+            ))
+          : userList.map((item) => (
+              <div key={item.uid} className="flex items-center gap-x-3 py-5 ">
+                <div className="w-[50px] h-[50px]">
+                  <img
+                    className="rounded-full w-full"
+                    src={item.photoURL}
+                    loading="lazy"
+                  />
+                </div>
+                <h3 className="font-pop text-sm md:text-lg  text-gray-800 font-bold">
+                  {item.username}
+                </h3>
+
+                <div className="grow">
+                  <div className="flex w-full justify-end">
+                    {blockList.includes(item.uid + data.uid) ||
+                    blockList.includes(data.uid + item.uid) ? (
+                      <button className="font-pop font-medium text-white bg-red-500 px-[4px] py-[4px] rounded">
+                        <MdBlock />
+                      </button>
+                    ) : friends.includes(item.uid + data.uid) ||
+                      friends.includes(data.uid + item.uid) ? (
+                      <button className="font-pop font-medium text-white bg-blue-500 px-[4px] py-[4px] rounded">
+                        <AiOutlineCheck />
+                      </button>
+                    ) : friendrequestList.includes(item.uid + data.uid) ||
+                      friendrequestList.includes(data.uid + item.uid) ? (
+                      <button
+                        onClick={() => handleCancelFriendRequest(item)}
+                        className="font-pop font-medium text-white bg-red-500 px-[4px] py-[4px] rounded"
+                      >
+                        <BiMinus />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleFriendRequest(item)}
+                        className="font-pop font-medium text-white bg-greenLight px-[4px] py-[4px] rounded"
+                      >
+                        <AiOutlinePlus />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
       </div>
     </div>
   );
 };
 
 export default Userlist;
+
+// userList.map((item) => (
+//   <div key={item.uid} className="flex items-center gap-x-3 py-5 ">
+//     <div className="w-[50px] h-[50px]">
+//       <img
+//         className="rounded-full w-full"
+//         src={item.photoURL}
+//         loading="lazy"
+//       />
+//     </div>
+//     <h3 className="font-pop text-sm md:text-lg  text-gray-800 font-bold">
+//       {item.username}
+//     </h3>
+
+//     <div className="grow">
+//       <div className="flex w-full justify-end">
+//         {blockList.includes(item.uid + data.uid) ||
+//         blockList.includes(data.uid + item.uid) ? (
+//           <button className="font-pop font-medium text-white bg-red-500 px-[4px] py-[4px] rounded">
+//             <MdBlock />
+//           </button>
+//         ) : friends.includes(item.uid + data.uid) ||
+//           friends.includes(data.uid + item.uid) ? (
+//           <button className="font-pop font-medium text-white bg-blue-500 px-[4px] py-[4px] rounded">
+//             <AiOutlineCheck />
+//           </button>
+//         ) : friendrequestList.includes(item.uid + data.uid) ||
+//           friendrequestList.includes(data.uid + item.uid) ? (
+//           <button
+//             onClick={() => handleCancelFriendRequest(item)}
+//             className="font-pop font-medium text-white bg-red-500 px-[4px] py-[4px] rounded"
+//           >
+//             <BiMinus />
+//           </button>
+//         ) : (
+//           <button
+//             onClick={() => handleFriendRequest(item)}
+//             className="font-pop font-medium text-white bg-greenLight px-[4px] py-[4px] rounded"
+//           >
+//             <AiOutlinePlus />
+//           </button>
+//         )}
+//       </div>
+//     </div>
+//   </div>
+// ))
