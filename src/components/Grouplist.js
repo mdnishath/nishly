@@ -43,6 +43,7 @@ const Grouplist = () => {
   const [cropper, setCropper] = useState();
   const [imageUploadModal, setImageUploadModal] = useState(false);
   const [blockList, setBlockList] = useState([]);
+  const [groupadded, setGroupadded] = useState([]);
 
   useEffect(() => {
     onValue(dbRef(db, "blockList"), (snapshot) => {
@@ -166,14 +167,40 @@ const Grouplist = () => {
     onValue(dbRef(db, "groupJoinRequestList"), (snapshot) => {
       const arr = [];
       snapshot.forEach((item) => {
-        // arr.push({ ...item.val(), joinID: item.key });
+        // arr.push(item.val());
         // console.log(item.val());
-        arr.push(item.val().groupAdminID + item.val().senderID);
+        arr.push(item.val().groupID + item.val().senderID);
       });
 
       setGroupGoinList(arr);
     });
   }, []);
+  useEffect(() => {
+    onValue(dbRef(db, "groupJoinRequestList"), (snapshot) => {
+      const arr = [];
+      snapshot.forEach((item) => {
+        // arr.push(item.val());
+        // console.log(item.val());
+        arr.push(item.val().groupID + item.val().senderID);
+      });
+
+      setGroupGoinList(arr);
+    });
+  }, []);
+  useEffect(() => {
+    onValue(dbRef(db, "groupmembers"), (snapshot) => {
+      const arr = [];
+      snapshot.forEach((item) => {
+        // arr.push(item.val());
+        // console.log(item.val());
+        arr.push(item.val().groupID + item.val().memberID);
+      });
+
+      setGroupadded(arr);
+    });
+  }, []);
+
+  console.log(groupadded);
 
   return (
     <div className="w-full shadow-all p-5 rounded h-[45vh] overflow-y-auto scrolbar">
@@ -309,20 +336,23 @@ const Grouplist = () => {
                   <h3 className="font-pop text-sm md:text-sm  text-gray-500 font-semibold">
                     {item.adminname}
                   </h3>
-                  <h3 className="font-pop text-sm md:text-sm  text-gray-500 font-semibold">
+                  {/* <h3 className="font-pop text-sm md:text-sm  text-gray-500 font-semibold">
                     {item.adminemail}
-                  </h3>
+                  </h3> */}
 
-                  <p>{item.grouptags}</p>
+                  <p className=" bg-slate-200 inline-block text-sm px-3 rounded py-1">
+                    {item.grouptags}
+                  </p>
                 </div>
 
                 <div className="grow">
                   <div className="flex w-full justify-end">
-                    {item.adminid === data.uid ? (
+                    {groupadded.includes(item.groupID + data.uid) ||
+                    item.adminid === data.uid ? (
                       <button className="font-pop font-medium text-white bg-green-500 px-8 py-[4px] rounded-lg">
                         Joined
                       </button>
-                    ) : groupGoinList.includes(item.adminid + data.uid) ? (
+                    ) : groupGoinList.includes(item.groupID + data.uid) ? (
                       <button className="font-pop font-medium text-white bg-red-500 px-8 py-[4px] rounded-lg">
                         Requested
                       </button>

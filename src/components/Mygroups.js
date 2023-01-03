@@ -29,6 +29,7 @@ const Mygroups = () => {
   const [show, setShow] = useState(false);
   const [groupJoinList, setGroupGoinList] = useState([]);
   const [groupMembers, setGroupMembers] = useState([]);
+
   const [showMembers, setShowMembers] = useState(false);
 
   useEffect(() => {
@@ -50,15 +51,16 @@ const Mygroups = () => {
   };
 
   const getGroupRequest = (item) => {
-    console.log(item);
+    // console.log(item);
     setShow(true);
 
     onValue(ref(db, "groupJoinRequestList"), (snapshot) => {
       const arr = [];
       snapshot.forEach((item2) => {
-        // arr.push({ ...item2.val(), joinID: item2.key });
-        // console.log();
-        if (item2.val().groupAdminID === item.adminid) {
+        if (
+          data.uid === item2.val().groupAdminID &&
+          item.groupID === item2.val().groupID
+        ) {
           arr.push({ ...item2.val(), joinID: item2.key });
         }
       });
@@ -89,32 +91,35 @@ const Mygroups = () => {
     remove(ref(db, "groupJoinRequestList/" + item.joinID));
   };
 
-  useEffect(() => {
+  const showGroupMembers = (item) => {
+    setShowMembers(true);
+
     onValue(ref(db, "groupmembers"), (snapshot) => {
       const arr = [];
-      snapshot.forEach((item) => {
+      snapshot.forEach((item2) => {
         // console.log(item.val());
-        if (data.uid === item.val().groupAdminID) {
-          arr.push({ ...item.val(), key: item.key });
+        if (
+          data.uid === item2.val().groupAdminID &&
+          item.groupID === item2.val().groupID
+        ) {
+          arr.push({ ...item2.val(), key: item2.key });
         }
       });
 
       setGroupMembers(arr);
     });
-  }, []);
-
-  const showGroupMembers = () => {
-    setShowMembers(true);
   };
 
   const deletFromGroup = (item) => {
     remove(ref(db, "groupmembers/" + item.key));
   };
-  // console.log(groupMembers);
+  console.log(groupMembers);
   return (
     <div className="w-full shadow-all p-5 rounded h-[45vh] overflow-y-auto scrolbar">
-      <h3 className="font-pop text-[20px] md:text-[24px] text-gray-700 font-bold relative">
-        My Groups
+      <div className="flex justify-between gap-x-2 items-center relative">
+        <h3 className="font-pop text-[20px] md:text-[24px] text-gray-700 font-bold relative inline-block">
+          My Group
+        </h3>
         {showMembers ? (
           <button
             onClick={() => setShowMembers(!showMembers)}
@@ -123,10 +128,6 @@ const Mygroups = () => {
             Go Back
           </button>
         ) : show ? (
-          // <AiOutlineClose
-
-          //   className="text-[30px] font-bold absolute top-0 right-0 font-pop text-red-500 cursor-pointer"
-          // />
           <button
             onClick={() => setShow(!show)}
             className="text-lg font-bold absolute top-0 right-0 font-pop text-greenLight"
@@ -138,164 +139,130 @@ const Mygroups = () => {
             Group Info
           </button>
         )}
-      </h3>
-      <div className="md:p-3 divide-y divide-slate-200">
-        {myGroups.map((item) => (
-          <div key={item.groupID}>
-            {showMembers ? (
-              groupMembers.map((gm) => (
-                <div key={gm.key}>
+      </div>
+      {}
+      {showMembers ? (
+        groupMembers.length > 0 ? (
+          <div className="md:p-3 divide-y divide-slate-200">
+            {groupMembers.map((gr, gid) => (
+              <div key={gr.gid}>
+                <div className="flex items-center gap-x-3 py-5 ">
+                  <div className="w-[50px] h-[50px]">
+                    <img
+                      className="rounded-full  w-full h-full"
+                      src={gr.memberImage}
+                      alt=""
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-pop text-sm md:text-lg  text-gray-800 font-bold">
+                      {gr.memberName}
+                    </h3>
+
+                    {/* <p>{gr.senderName}</p> */}
+                  </div>
+
+                  <div className="grow">
+                    <div className="flex w-full justify-end gap-x-3">
+                      <div className="flex gap-x-2">
+                        <BsTrash
+                          onClick={() => deletFromGroup(gr)}
+                          className="text-[24px] cursor-pointer text-red-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          "Not Found"
+        )
+      ) : show ? (
+        <div className="md:p-3 divide-y divide-slate-200">
+          {groupJoinList.length > 0
+            ? groupJoinList.map((jn, index) => (
+                <div key={jn.index}>
                   <div className="flex items-center gap-x-3 py-5 ">
                     <div className="w-[50px] h-[50px]">
                       <img
                         className="rounded-full  w-full h-full"
-                        src={gm.memberImage}
+                        src={jn.senderImage}
                         alt=""
                       />
                     </div>
                     <div>
                       <h3 className="font-pop text-sm md:text-lg  text-gray-800 font-bold">
-                        {gm.memberName}
+                        {jn.groupname}
                       </h3>
 
-                      <p>{gm.memberEmail}</p>
+                      <p>{jn.senderName}</p>
                     </div>
 
                     <div className="grow">
                       <div className="flex w-full justify-end gap-x-3">
-                        {loading ? (
-                          <ThreeDots
-                            height="80"
-                            width="80"
-                            radius="9"
-                            color="#4fa94d"
-                            ariaLabel="three-dots-loading"
-                            wrapperStyle={{}}
-                            wrapperClassName=""
-                            visible={true}
+                        <div className="flex gap-x-2">
+                          <AiOutlineCheck
+                            onClick={() => addGroupMembers(jn)}
+                            className="text-[24px] cursor-pointer text-greenLight"
                           />
-                        ) : (
-                          <div className="flex gap-x-2">
-                            <BsTrash
-                              onClick={() => deletFromGroup(gm)}
-                              className="text-[24px] cursor-pointer text-red-500"
-                            />
-                          </div>
-                        )}
+
+                          <BsTrash
+                            onClick={() => deletGroupRequest(jn)}
+                            className="text-[24px] cursor-pointer text-red-500"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               ))
-            ) : (
-              <div>
-                {show ? (
-                  groupJoinList.map((rq) => (
-                    <div key={rq.groupID}>
-                      <div className="flex items-center gap-x-3 py-5 ">
-                        <div className="w-[50px] h-[50px]">
-                          <img
-                            className="rounded-full  w-full h-full"
-                            src={rq.senderImage}
-                            alt=""
-                          />
-                        </div>
-                        <div>
-                          <h3 className="font-pop text-sm md:text-lg  text-gray-800 font-bold">
-                            {rq.senderName}
-                          </h3>
+            : "No request found"}
+        </div>
+      ) : (
+        <div className="md:p-3 divide-y divide-slate-200">
+          {myGroups.map((item, index) => (
+            <div key={item.index}>
+              <div className="flex items-center gap-x-3 py-5 ">
+                <div className="w-[50px] h-[50px]">
+                  <img
+                    className="rounded-full  w-full h-full"
+                    src={item.groupimage}
+                    alt=""
+                  />
+                </div>
+                <div>
+                  <h3 className="font-pop text-sm md:text-lg  text-gray-800 font-bold">
+                    {item.groupname}
+                  </h3>
 
-                          <p>{rq.senderEmail}</p>
-                        </div>
+                  <p>{item.grouptags}</p>
+                </div>
 
-                        <div className="grow">
-                          <div className="flex w-full justify-end gap-x-3">
-                            {loading ? (
-                              <ThreeDots
-                                height="80"
-                                width="80"
-                                radius="9"
-                                color="#4fa94d"
-                                ariaLabel="three-dots-loading"
-                                wrapperStyle={{}}
-                                wrapperClassName=""
-                                visible={true}
-                              />
-                            ) : (
-                              <div className="flex gap-x-2">
-                                <AiOutlineCheck
-                                  onClick={() => addGroupMembers(rq)}
-                                  className="text-[24px] cursor-pointer text-greenLight"
-                                />
-
-                                <BsTrash
-                                  onClick={() => deletGroupRequest(rq)}
-                                  className="text-[24px] cursor-pointer text-red-500"
-                                />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div key={item.groupID}>
-                    <div className="flex items-center gap-x-3 py-5 ">
-                      <div className="w-[50px] h-[50px]">
-                        <img
-                          className="rounded-full  w-full h-full"
-                          src={item.groupimage}
-                          alt=""
-                        />
-                      </div>
-                      <div>
-                        <h3 className="font-pop text-sm md:text-lg  text-gray-800 font-bold">
-                          {item.groupname}
-                        </h3>
-
-                        <p>{item.grouptags}</p>
-                      </div>
-
-                      <div className="grow">
-                        <div className="flex w-full justify-end gap-x-3">
-                          {loading ? (
-                            <ThreeDots
-                              height="80"
-                              width="80"
-                              radius="9"
-                              color="#4fa94d"
-                              ariaLabel="three-dots-loading"
-                              wrapperStyle={{}}
-                              wrapperClassName=""
-                              visible={true}
-                            />
-                          ) : (
-                            <div className="flex gap-x-2">
-                              <AiOutlineInfoCircle
-                                onClick={showGroupMembers}
-                                className="text-[30px] cursor-pointer text-greenLight"
-                              />
-                              <AiOutlineUsergroupAdd
-                                onClick={() => getGroupRequest(item)}
-                                className="text-[30px] cursor-pointer text-greenLight"
-                              />
-                              <AiOutlineClose
-                                onClick={() => handleDeletGroup(item)}
-                                className="text-[30px] cursor-pointer text-red-500"
-                              />
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                <div className="grow">
+                  <div className="flex w-full justify-end gap-x-3">
+                    <div className="flex gap-x-2">
+                      <AiOutlineInfoCircle
+                        onClick={() => showGroupMembers(item)}
+                        className="text-[30px] cursor-pointer text-greenLight"
+                      />
+                      <AiOutlineUsergroupAdd
+                        onClick={() => getGroupRequest(item)}
+                        className="text-[30px] cursor-pointer text-greenLight"
+                      />
+                      <AiOutlineClose
+                        onClick={() => handleDeletGroup(item)}
+                        className="text-[30px] cursor-pointer text-red-500"
+                      />
                     </div>
                   </div>
-                )}
+                </div>
               </div>
-            )}
-          </div>
-        ))}
-      </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
