@@ -7,7 +7,6 @@ import reportWebVitals from "./reportWebVitals";
 // import { createBrowserRouter, RouterProvider, Route } from "react-router-dom";
 // import { routes } from "./routes";
 import firebaseConfig from "./firebaseConfig ";
-import { ContextProvider } from "./contexts/ContextProvider";
 import { Provider } from "react-redux";
 import store from "./store/store";
 // const router = createBrowserRouter(routes);

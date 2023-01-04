@@ -368,7 +368,7 @@ const Grouplist = () => {
                         onClick={() => deletGroupRequest(item, data.uid)}
                         className="font-pop font-medium text-white bg-red-500 px-8 py-[4px] rounded-lg"
                       >
-                        Cancle
+                        Cancel
                       </button>
                     ) : (
                       <button
