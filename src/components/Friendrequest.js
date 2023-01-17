@@ -12,6 +12,7 @@ import {
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { userData } from "../slices/userSlice";
+import Search from "./Search";
 
 const Friendrequest = () => {
   let data = useSelector((state) => state.userData.userInfo);
@@ -44,13 +45,45 @@ const Friendrequest = () => {
   };
 
   return (
-    <div className="w-full shadow-all p-5 rounded h-[45vh] overflow-y-auto scrolbar">
-      <h3 className="font-pop text-[20px] md:text-[24px] text-gray-700 font-bold relative">
-        Friend Requests
-        <BiDotsVerticalRounded className="text-[30px] absolute top-0 right-0" />
-      </h3>
+    <div className="h-[360px] w-full overflow-x-hidden rounded-xl bg-white p-5 shadow-all">
+      <div className="flex justify-between gap-x-2">
+        <h3 className=" text-2xl font-semibold text-primary">Friend Request</h3>
+        {friendrequestList.length > 0 && <Search obj={friendrequestList} />}
+      </div>
+      <div className="mt-5">
+        <div className="divide-y">
+          {friendrequestList.map((item) => (
+            <div
+              key={item.userID}
+              className="flex items-center justify-between py-4"
+            >
+              <div className="h-[40px] w-[40px] rounded-full shadow-lg">
+                <img
+                  className="w-full rounded-full"
+                  src={item.senderPhotoURL}
+                  alt="profile"
+                />
+              </div>
 
-      <div className="md:p-3 divide-y divide-slate-200">
+              <div className="pl-5">
+                <h4 className="text-base font-semibold">{item.senderName}</h4>
+                {/* <span className="inline-block rounded-full bg-slate-100 px-3 text-[12px] text-greenLight">
+                  {item.grouptags}
+                </span> */}
+              </div>
+              <div className="flex grow justify-end">
+                <button
+                  onClick={() => handleAddFrindRequest(item)}
+                  className="inline-block rounded-full bg-primary px-4 py-1 text-[12px] font-semibold text-white shadow-btn"
+                >
+                  Block
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* <div className="md:p-3 divide-y divide-slate-200">
         <>
           {friendrequestList.map((item) => (
             <div key={item.userID} className="flex items-center gap-x-3 py-5 ">
@@ -77,7 +110,7 @@ const Friendrequest = () => {
             </div>
           ))}
         </>
-      </div>
+      </div> */}
     </div>
   );
 };

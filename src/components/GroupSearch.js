@@ -6,13 +6,12 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { searchData } from "../slices/searchSlice";
 
-const Search = ({ obj }) => {
+const GroupSearch = ({ obj }) => {
   const dispatch = useDispatch();
   const data = useSelector((state) => state.filterData.data);
 
   const [showform, setShowForm] = useState(false);
   const [input, setInput] = useState("");
-  const [tempData, setTempData] = useState([]);
 
   const handleSearch = (e) => {
     if (obj.length > 0) {
@@ -23,7 +22,7 @@ const Search = ({ obj }) => {
       } else {
         obj.filter((item) => {
           console.log();
-          if (item.username.toLowerCase().includes(e.toLowerCase())) {
+          if (item.groupname.toLowerCase().includes(e.toLowerCase())) {
             arr.push(item);
           }
           dispatch(searchData([...arr]));
@@ -57,4 +56,4 @@ const Search = ({ obj }) => {
   );
 };
 
-export default Search;
+export default GroupSearch;

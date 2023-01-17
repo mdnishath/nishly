@@ -12,6 +12,7 @@ import {
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { userData } from "../slices/userSlice";
+import Search from "./Search";
 
 const Friends = () => {
   let data = useSelector((state) => state.userData.userInfo);
@@ -43,46 +44,49 @@ const Friends = () => {
   };
   //console.log(friends);
   return (
-    <div className="w-full shadow-all p-5 rounded h-[45vh] overflow-y-auto scrolbar">
-      <h3 className="font-pop text-[20px] md:text-[24px] text-gray-700 font-bold relative">
-        Friends
-        <BiDotsVerticalRounded className="text-[30px] absolute top-0 right-0" />
-      </h3>
+    <div className="h-[360px] w-full overflow-x-hidden rounded-xl bg-white p-5 shadow-all">
+      <div className="flex justify-between gap-x-2">
+        <h3 className=" text-2xl font-semibold text-primary">Friends</h3>
+        {friends.length > 0 && <Search obj={friends} />}
+      </div>
 
-      <div className="md:p-3 divide-y divide-slate-200">
-        {friends.map((item) => (
-          <div key={item.userID}>
-            <div className="flex items-center gap-x-3 py-5 ">
-              <div className="w-[50px] h-[50px]">
+      <div className="mt-5">
+        <div className="divide-y">
+          {friends.map((item) => (
+            <div className="flex items-center justify-between py-4">
+              <div className="h-[40px] w-[40px] rounded-full shadow-lg">
                 <img
-                  className="rounded-full w-full"
+                  className="w-full rounded-full"
                   src={
                     data.uid == item.senderId
                       ? item.receiverPhotoURL
                       : item.senderPhotoURL
                   }
-                  alt=""
+                  alt="profile"
                 />
               </div>
-              <h3 className="font-pop text-sm md:text-lg  text-gray-800 font-bold">
-                {data.uid == item.senderId
-                  ? item.receiverName
-                  : item.senderName}
-              </h3>
 
-              <div className="grow">
-                <div className="flex w-full justify-end">
-                  <button
-                    onClick={() => handleBlock(item)}
-                    className="font-pop font-medium text-white bg-greenLight px-8 py-[4px] rounded-lg"
-                  >
-                    Block
-                  </button>
-                </div>
+              <div className="pl-5">
+                <h4 className="text-base font-semibold">
+                  {data.uid == item.senderId
+                    ? item.receiverName
+                    : item.senderName}
+                </h4>
+                {/* <span className="inline-block rounded-full bg-slate-100 px-3 text-[12px] text-greenLight">
+                  {item.grouptags}
+                </span> */}
+              </div>
+              <div className="flex grow justify-end">
+                <button
+                  onClick={() => handleBlock(item)}
+                  className="inline-block rounded-full bg-primary px-4 py-1 text-[12px] font-semibold text-white shadow-btn"
+                >
+                  Block
+                </button>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

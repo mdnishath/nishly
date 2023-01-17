@@ -14,7 +14,7 @@ import Sidbar from "../components/Sidbar";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { userData } from "../slices/userSlice";
-// import Tooltip from "../lib/Tooltip/TolTip";
+import Container from "../components/Container";
 
 const Home = () => {
   const auth = getAuth();
@@ -62,22 +62,32 @@ const Home = () => {
           visible={true}
         />
       ) : (
-        <div className="flex ">
-          <div className="flex flex-col md:flex-row ml-[100px] p-5 w-full gap-x-10 gap-y-10">
-            <div className=" md:w-2/6 flex flex-col gap-y-10">
-              <Grouplist />
-              <Friendrequest />
-            </div>
-            <div className=" md:w-2/6 flex flex-col gap-y-10">
-              <Friends />
-              <Mygroups />
-            </div>
-            <div className=" md:w-2/6 flex flex-col gap-y-10">
-              <Userlist />
-              <Blocklist />
-            </div>
+        <Container>
+          <div className="grid grid-cols-1 gap-8 px-2 sm:grid-cols-2 sm:px-4 md:grid-cols-2 md:gap-4 md:px-4 lg:grid-cols-2 lg:gap-8 lg:px-4 xl:grid-cols-3 xl:px-0">
+            <Grouplist />
+            <Friends />
+            <Userlist />
+            <Friendrequest />
+            <Mygroups />
+            <Blocklist />
           </div>
-        </div>
+        </Container>
+        // <div className="flex ">
+        //   <div className="flex flex-col md:flex-row ml-[100px] p-5 w-full gap-x-10 gap-y-10">
+        //     <div className=" md:w-2/6 flex flex-col gap-y-10">
+        //       <Grouplist />
+        //       <Friendrequest />
+        //     </div>
+        //     <div className=" md:w-2/6 flex flex-col gap-y-10">
+        //       <Friends />
+        //       <Mygroups />
+        //     </div>
+        //     <div className=" md:w-2/6 flex flex-col gap-y-10">
+        //       <Userlist />
+        //       <Blocklist />
+        //     </div>
+        //   </div>
+        // </div>
       )}
     </>
   );

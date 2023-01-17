@@ -3,13 +3,18 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
-      boxShadow: {
-        all: "0px 0px 15px -3px rgba(0,0,0,0.2)",
+      maxWidth: {
+        container: "1440px",
       },
       colors: {
-        greenDark: "#075E54",
-        greenLight: "#25D366",
-        dark: "#334155",
+        primary: "#6C63FF",
+        chat: "#e2e0ff",
+      },
+      boxShadow: {
+        bar: "0px 0px 70px -7px rgba(0,0,0,0.7)",
+        all: "0px 0px 40px -1px rgba(108,99,255,0.2)",
+        btn: "0px 5px 20px -1px rgba(108,99,255,0.7)",
+        profile: "0px 5px 20px -1px rgba(108,99,255,0.5)",
       },
     },
     fontFamily: {

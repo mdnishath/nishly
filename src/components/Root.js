@@ -1,14 +1,19 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Sidbar from "./Sidbar";
-import { useSelector } from "react-redux";
+import Topbar from "./Topbar";
 
 const Root = () => {
-  let data = useSelector((state) => state.userData.userInfo);
+  let location = useLocation();
+  console.log(location.pathname);
   return (
     <>
-      {data && <Sidbar />}
-
+      {location.pathname !== "/login" && (
+        <>
+          <Sidbar />
+          <Topbar />
+        </>
+      )}
       <Outlet />
     </>
   );

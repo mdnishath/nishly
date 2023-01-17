@@ -1,20 +1,13 @@
-import React, { useState } from "react";
-import {
-  AiOutlineMessage,
-  AiOutlineSetting,
-  AiOutlineLogout,
-  AiOutlineCloudUpload,
-} from "react-icons/ai";
-import { BiHomeAlt } from "react-icons/bi";
-import { BsSearch } from "react-icons/bs";
-import { IoMdNotificationsOutline } from "react-icons/io";
+import React from "react";
+import { AiOutlineHome, AiOutlineLogout } from "react-icons/ai";
+import { HiOutlineChatBubbleOvalLeftEllipsis } from "react-icons/hi2";
+import { IoIosNotificationsOutline } from "react-icons/io";
+import { FiSettings } from "react-icons/fi";
+import { getAuth, updateProfile, signOut } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import { userData } from "../slices/userSlice";
-import { getAuth, updateProfile, signOut } from "firebase/auth";
 import { NavLink, useNavigate } from "react-router-dom";
-import Cropper from "react-cropper";
-import "cropperjs/dist/cropper.css";
+import { userData } from "../slices/userSlice";
 import {
   getStorage,
   uploadString,
@@ -29,7 +22,6 @@ import {
   update,
 } from "firebase/database";
 import { ThreeDots } from "react-loader-spinner";
-
 const Sidbar = () => {
   const storage = getStorage();
   const db = getDatabase();
@@ -37,12 +29,6 @@ const Sidbar = () => {
   const navigate = useNavigate();
   const auth = getAuth();
   let data = useSelector((state) => state.userData.userInfo);
-  let [show, setShow] = useState(false);
-  const [image, setImage] = useState();
-  const [cropData, setCropData] = useState("#");
-  const [cropper, setCropper] = useState();
-  const [imageUploadModal, setImageUploadModal] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const handleLogout = () => {
     //console.log("logout clicked");
@@ -57,217 +43,45 @@ const Sidbar = () => {
         //console.log(error);
       });
   };
-
-  //Profile pic
-  const handleClickProfile = () => {
-    console.log("profile pic clicked");
-    setShow(true);
-  };
-
-  const handleImageUploadChange = (e) => {
-    e.preventDefault();
-    let files;
-    if (e.dataTransfer) {
-      files = e.dataTransfer.files;
-    } else if (e.target) {
-      files = e.target.files;
-    }
-    const reader = new FileReader();
-    reader.onload = () => {
-      setImage(reader.result);
-    };
-    reader.readAsDataURL(files[0]);
-  };
-
-  const getCropData = () => {
-    if (typeof cropper !== "undefined") {
-      setCropData(cropper.getCroppedCanvas().toDataURL());
-      const storageRef = ref(storage, auth.currentUser.uid);
-      const message4 = cropper.getCroppedCanvas().toDataURL();
-      setLoading(true);
-      uploadString(storageRef, message4, "data_url").then((snapshot) => {
-        // console.log("Uploaded a data_url string!");
-        getDownloadURL(storageRef)
-          .then((downloadURL) => {
-            const postData = {
-              // username: data.displayName,
-              // email: data.email,
-              photoURL: downloadURL,
-            };
-            console.log(auth.currentUser.uid);
-
-            update(updateRef(db, "users/" + data.uid), postData);
-            updateProfile(auth.currentUser, {
-              photoURL: downloadURL,
-            }).then(() => {
-              setShow(false);
-              setImage("");
-              setCropData("");
-              setCropper("");
-              setLoading(false);
-            });
-          })
-          .catch((error) => {
-            // An error occurred
-            // ...
-            console.log(error);
-          });
-      });
-    }
-  };
-  const handleUpload = () => {
-    getCropData();
-  };
-  const handleCancel = () => {
-    setShow(false);
-    setImage("");
-    setCropData("");
-    setCropper("");
-  };
-
-  const active = "text-[40px] text-greenLight";
-  const inactive = "text-[40px] text-white";
-
+  const active =
+    "bg-white rounded text-primary  lg:px-5 lg:py-4 px-2 py-2 shadow-bar";
+  const notActive = "bg-transparent lg:px-5 lg:py-4 text-white px-2 py-2";
   return (
-    <>
-      {show && (
-        <div className=" absolute top-0 left-0 w-full h-screen bg-white z-40">
-          <div className="flex h-screen justify-center items-center ">
-            <div className="md:w-[600px] w-full ml-[100px] md:ml-0">
-              <div className=" bg-white p-5 rounded shadow-all">
-                <h3 className="font-pop font-bold text-black text-xl">
-                  Update your profile picture
-                </h3>
-                {image ? (
-                  <div className="w-[100px] h-[100px] mx-auto my-4 overflow-hidden rounded-full">
-                    <div className="img-preview w-full h-full rounded-full " />
-                  </div>
-                ) : (
-                  <div className="w-[80px] h-[80px] mx-auto my-4 overflow-hidden rounded-full">
-                    <img src={"images/profile.png"} />
-                  </div>
-                )}
-                <div className="mb-4">
-                  <input
-                    className=""
-                    type="file"
-                    onChange={handleImageUploadChange}
-                  />
-                </div>
-                <div className="w-full">
-                  {image && (
-                    <Cropper
-                      style={{ height: 400, width: "100%" }}
-                      zoomTo={0.5}
-                      initialAspectRatio={1}
-                      preview=".img-preview"
-                      src={image}
-                      viewMode={1}
-                      minCropBoxHeight={10}
-                      minCropBoxWidth={10}
-                      background={false}
-                      responsive={true}
-                      autoCropArea={1}
-                      checkOrientation={false} // https://github.com/fengyuanchen/cropperjs/issues/671
-                      onInitialized={(instance) => {
-                        setCropper(instance);
-                      }}
-                      guides={true}
-                    />
-                  )}
-                  <br />
-                  {loading ? (
-                    <ThreeDots
-                      height="100"
-                      width="100"
-                      radius="9"
-                      color=" #5F35F5"
-                      ariaLabel="three-dots-loading"
-                      wrapperStyle={{}}
-                      wrapperClassName=""
-                      visible={true}
-                    />
-                  ) : (
-                    <div className="flex justify-center space-x-2">
-                      <button
-                        onClick={handleUpload}
-                        className="font-pop font-medium text-white bg-greenLight px-8 py-[4px] rounded-lg"
-                      >
-                        upload
-                      </button>
-                      <button
-                        onClick={handleCancel}
-                        className=" font-pop font-medium text-white bg-red-500 px-8 py-[4px] rounded-lg"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
+    <div className="fixed bottom-0 z-[100] w-full bg-primary  px-4 md:top-0 md:left-0 md:h-full md:w-[100px] md:px-0">
+      <div className="flex items-center justify-between gap-y-8 py-5 md:h-full md:flex-col">
+        <div className="flex justify-around gap-x-8 md:flex-col md:gap-y-8">
+          <NavLink
+            to="/"
+            className={({ isActive }) => (isActive ? active : notActive)}
+          >
+            <AiOutlineHome className="text-[30px]" />
+          </NavLink>
+          <NavLink
+            to="/message"
+            className={({ isActive }) => (isActive ? active : notActive)}
+          >
+            <HiOutlineChatBubbleOvalLeftEllipsis className="text-[30px] " />
+          </NavLink>
+          <NavLink
+            to="/notification"
+            className={({ isActive }) => (isActive ? active : notActive)}
+          >
+            <IoIosNotificationsOutline className="text-[30px] " />
+          </NavLink>
+          <NavLink
+            to="/settings"
+            className={({ isActive }) => (isActive ? active : notActive)}
+          >
+            <FiSettings className="text-[30px] " />
+          </NavLink>
         </div>
-      )}
-      <div className="w-[100px] bg-dark h-screen fixed p-5 flex flex-col justify-between z-50">
-        <div className="flex flex-col flex-2 gap-y-14 items-center">
-          <div className="w-[50px] h-[50px] relative group cursor-pointer">
-            <img
-              className="w-full rounded-full"
-              src={data && `${data.photoURL}`}
-              alt="profile"
-            />
-            <button
-              onClick={handleClickProfile}
-              className="hidden group-hover:block w-full h-full bg-black rounded-full opacity-50 absolute top-0 left-0"
-            >
-              <div className="flex h-full justify-center items-center">
-                <AiOutlineCloudUpload className="text-white text-[24px]" />
-              </div>
-            </button>
-          </div>
-          <button>
-            <NavLink
-              to="/"
-              className={({ isActive }) => (isActive ? active : inactive)}
-            >
-              <BiHomeAlt data-tip="Dashboard" />
-            </NavLink>
-          </button>
-
-          <button>
-            <NavLink
-              to="/message"
-              className={({ isActive }) => (isActive ? active : inactive)}
-            >
-              <AiOutlineMessage />
-            </NavLink>
-          </button>
-          <button>
-            <NavLink
-              to="/notification"
-              className={({ isActive }) => (isActive ? active : inactive)}
-            >
-              <IoMdNotificationsOutline />
-            </NavLink>
-          </button>
-        </div>
-        <div className="flex flex-col items-center gap-y-5">
-          <button>
-            <BsSearch className=" text-[40px] text-white" />
-          </button>
-          <button>
-            <AiOutlineSetting className=" text-[40px] text-white" />
-          </button>
-          <button>
-            <AiOutlineLogout
-              onClick={handleLogout}
-              className=" text-[40px] text-white"
-            />
+        <div>
+          <button className={notActive} onClick={handleLogout}>
+            <AiOutlineLogout className="text-[30px] " />
           </button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

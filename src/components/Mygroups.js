@@ -16,10 +16,9 @@ import {
   push,
   remove,
 } from "firebase/database";
-import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import { userData } from "../slices/userSlice";
-import Grouplist from "./Grouplist";
+import Groupjoined from "./Groupjoined";
+import GroupRequest from "./GroupRequest";
 
 const Mygroups = () => {
   const db = getDatabase();
@@ -115,153 +114,114 @@ const Mygroups = () => {
   };
   console.log(myGroups);
   return (
-    <div className="w-full shadow-all p-5 rounded h-[45vh] overflow-y-auto scrolbar">
-      <div className="flex justify-between gap-x-2 items-center relative">
-        <h3 className="font-pop text-[20px] md:text-[24px] text-gray-700 font-bold relative inline-block">
-          My Group
-        </h3>
+    <div className="h-[360px] w-full overflow-x-hidden rounded-xl bg-white p-5 shadow-all">
+      <div className="flex justify-between gap-x-2">
+        <h3 className=" text-2xl font-semibold text-primary"> My Group</h3>
         {showMembers ? (
           <button
             onClick={() => setShowMembers(!showMembers)}
-            className="text-lg font-bold absolute top-0 right-0 font-pop text-greenLight"
+            className="text-lg font-bold  font-pop text-greenLight"
           >
             Go Back
           </button>
         ) : show ? (
           <button
             onClick={() => setShow(!show)}
-            className="text-lg font-bold absolute top-0 right-0 font-pop text-greenLight"
+            className="text-lg font-bold font-pop text-greenLight"
           >
             Go Back
           </button>
         ) : (
-          <button className="text-lg font-bold absolute top-0 right-0 font-pop text-greenLight">
+          <button className="text-lg font-bold font-pop text-greenLight">
             Group Info
           </button>
         )}
       </div>
-      {}
       {showMembers ? (
         groupMembers.length > 0 ? (
-          <div className="md:p-3 divide-y divide-slate-200">
-            {groupMembers.map((gr, gid) => (
-              <div key={gr.gid}>
-                <div className="flex items-center gap-x-3 py-5 ">
-                  <div className="w-[50px] h-[50px]">
-                    <img
-                      className="rounded-full  w-full h-full"
-                      src={gr.memberImage}
-                      alt=""
-                    />
-                  </div>
-                  <div>
-                    <h3 className="font-pop text-sm md:text-lg  text-gray-800 font-bold">
-                      {gr.memberName}
-                    </h3>
-
-                    {/* <p>{gr.senderName}</p> */}
-                  </div>
-
-                  <div className="grow">
-                    <div className="flex w-full justify-end gap-x-3">
-                      <div className="flex gap-x-2">
-                        <BsTrash
-                          onClick={() => deletFromGroup(gr)}
-                          className="text-[24px] cursor-pointer text-red-500"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <Groupjoined
+            groupMembers={groupMembers}
+            deletFromGroup={deletFromGroup}
+          />
         ) : (
           "Not Found"
         )
       ) : show ? (
-        <div className="md:p-3 divide-y divide-slate-200">
-          {groupJoinList.length > 0
-            ? groupJoinList.map((jn, index) => (
-                <div key={jn.index}>
-                  <div className="flex items-center gap-x-3 py-5 ">
-                    <div className="w-[50px] h-[50px]">
-                      <img
-                        className="rounded-full  w-full h-full"
-                        src={jn.senderImage}
-                        alt=""
-                      />
-                    </div>
-                    <div>
-                      <h3 className="font-pop text-sm md:text-lg  text-gray-800 font-bold">
-                        {jn.senderName}
-                      </h3>
-
-                      {/* <p></p> */}
-                    </div>
-
-                    <div className="grow">
-                      <div className="flex w-full justify-end gap-x-3">
-                        <div className="flex gap-x-2">
-                          <AiOutlineCheck
-                            onClick={() => addGroupMembers(jn)}
-                            className="text-[24px] cursor-pointer text-greenLight"
-                          />
-
-                          <BsTrash
-                            onClick={() => deletGroupRequest(jn)}
-                            className="text-[24px] cursor-pointer text-red-500"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))
-            : "No request found"}
-        </div>
+        <GroupRequest
+          groupJoinList={groupJoinList}
+          deletGroupRequest={deletGroupRequest}
+        />
       ) : (
-        <div className="md:p-3 divide-y divide-slate-200">
-          {myGroups.map((item) => (
-            <div key={item.groupID}>
-              <div className="flex items-center gap-x-3 py-5 ">
-                <div className="w-[50px] h-[50px]">
+        <div className="mt-5">
+          <div className="divide-y">
+            {myGroups.map((item) => (
+              <div
+                key={item.groupID}
+                className="flex items-center justify-between py-4"
+              >
+                <div className="h-[40px] w-[40px] rounded-full shadow-lg">
                   <img
-                    className="rounded-full  w-full h-full"
+                    className="w-full rounded-full"
                     src={item.groupimage}
-                    alt=""
+                    alt="profile"
                   />
                 </div>
-                <div>
-                  <h3 className="font-pop text-sm md:text-lg  text-gray-800 font-bold">
-                    {item.groupname}
-                  </h3>
 
-                  <p>{item.grouptags}</p>
+                <div className="pl-5">
+                  <h4 className="text-base font-semibold">{item.groupname}</h4>
+                  <span className="inline-block rounded-full bg-slate-100 px-3 text-[12px] text-greenLight">
+                    {item.grouptags}
+                  </span>
                 </div>
-
-                <div className="grow">
-                  <div className="flex w-full justify-end gap-x-3">
-                    <div className="flex gap-x-2">
-                      <AiOutlineInfoCircle
-                        onClick={() => showGroupMembers(item)}
-                        className="text-[30px] cursor-pointer text-greenLight"
-                      />
-                      <AiOutlineUsergroupAdd
-                        onClick={() => getGroupRequest(item)}
-                        className="text-[30px] cursor-pointer text-greenLight"
-                      />
-                      <AiOutlineClose
-                        onClick={() => handleDeletGroup(item)}
-                        className="text-[30px] cursor-pointer text-red-500"
-                      />
-                    </div>
-                  </div>
+                <div className="flex grow justify-end gap-x-2 items-center">
+                  <AiOutlineInfoCircle
+                    onClick={() => showGroupMembers(item)}
+                    className="text-[24px] cursor-pointer text-primary"
+                  />
+                  <AiOutlineUsergroupAdd
+                    onClick={() => getGroupRequest(item)}
+                    className="text-[24px] cursor-pointer text-primary"
+                  />
+                  <AiOutlineClose
+                    onClick={() => handleDeletGroup(item)}
+                    className="text-[20px] cursor-pointer text-primary"
+                  />
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
+
+        // <div className="md:p-3 divide-y divide-slate-200">
+        //   {myGroups.map((item) => (
+        //     <div key={item.groupID}>
+        //       <div className="flex items-center gap-x-3 py-5 ">
+        //         <div className="w-[50px] h-[50px]">
+        //           <img
+        //             className="rounded-full  w-full h-full"
+        //             src={item.groupimage}
+        //             alt=""
+        //           />
+        //         </div>
+        //         <div>
+        //           <h3 className="font-pop text-sm md:text-lg  text-gray-800 font-bold">
+        //             {item.groupname}
+        //           </h3>
+
+        //           <p>{item.grouptags}</p>
+        //         </div>
+
+        //         <div className="grow">
+        //           <div className="flex w-full justify-end gap-x-3">
+        //             <div className="flex gap-x-2">
+
+        //             </div>
+        //           </div>
+        //         </div>
+        //       </div>
+        //     </div>
+        //   ))}
+        // </div>
       )}
     </div>
   );

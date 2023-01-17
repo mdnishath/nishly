@@ -211,33 +211,36 @@ const Grouplist = () => {
   // console.log(groupadded);
 
   return (
-    <div className="w-full shadow-all p-5 rounded h-[45vh] overflow-y-auto scrolbar">
-      <h3 className="font-pop text-[20px] md:text-[24px] text-gray-700 font-bold relative">
-        Group List
-        {show ? (
-          <AiOutlineClose
-            onClick={() => setShow(!show)}
-            className="text-[30px] font-bold absolute top-0 right-0 font-pop text-red-500 cursor-pointer"
-          />
-        ) : (
-          <button
-            onClick={handleCreateGroup}
-            className="text-lg font-bold absolute top-0 right-0 font-pop text-greenLight"
-          >
-            Creacte Group
-          </button>
-        )}
-      </h3>
+    <div className="h-[360px] w-full overflow-x-hidden rounded-xl bg-white p-5 shadow-all">
+      <div className="flex justify-between">
+        <h3 className=" text-2xl font-semibold text-primary">Group List</h3>
+        <div>
+          {show ? (
+            <AiOutlineClose
+              onClick={() => setShow(!show)}
+              className="text-[30px] font-bold font-pop text-red-500 cursor-pointer"
+            />
+          ) : (
+            <button
+              onClick={handleCreateGroup}
+              className="text-base font-semibold font-pop text-greenLight"
+            >
+              Create Group
+            </button>
+          )}
+        </div>
+      </div>
+
       {show ? (
         <div className="w-full py-4">
           <div>
             <div className="flex items-center space-x-4">
               {image ? (
-                <div className="w-[50px] h-[50px] my-4 overflow-hidden rounded-full">
+                <div className="h-[40px] w-[40px] rounded-full shadow-lg my-4 overflow-hidden">
                   <div className="img-preview w-full h-full rounded-full " />
                 </div>
               ) : (
-                <div className="w-[50px] h-[50px] my-4 overflow-hidden rounded-full">
+                <div className="h-[40px] w-[40px] rounded-full shadow-lg my-4 overflow-hidden">
                   <img src={data.photoURL} />
                 </div>
               )}
@@ -326,63 +329,52 @@ const Grouplist = () => {
           </div>
         </div>
       ) : (
-        <div className="md:p-3 divide-y divide-slate-200">
-          {groupList.map((item) => (
-            <div key={item.groupID}>
-              <div className="flex items-center gap-x-3 py-5 ">
-                <div className="w-[50px] h-[50px]">
+        <div className="mt-5">
+          <div className="divide-y">
+            {groupList.map((item) => (
+              <div className="flex items-center justify-between py-4">
+                <div className="h-[40px] w-[40px] rounded-full shadow-lg">
                   <img
-                    className="rounded-full w-full h-full"
+                    className="w-full rounded-full"
                     src={item.groupimage}
-                    alt=""
+                    alt="profile"
                   />
                 </div>
-                <div>
-                  <h3 className="font-pop text-sm md:text-lg  text-gray-800 font-bold">
-                    {item.groupname}
-                  </h3>
-                  <h3 className="font-pop text-sm md:text-sm  text-gray-500 font-semibold">
-                    {item.adminname}
-                  </h3>
-                  {/* <h3 className="font-pop text-sm md:text-sm  text-gray-500 font-semibold">
-                    {item.adminemail}
-                  </h3> */}
 
-                  <p className=" bg-slate-200 inline-block text-sm px-3 rounded py-1">
+                <div className="pl-5">
+                  <h4 className="text-base font-semibold">{item.groupname}</h4>
+                  <span className="inline-block rounded-full bg-slate-100 px-3 text-[12px] text-greenLight">
                     {item.grouptags}
-                  </p>
+                  </span>
                 </div>
-
-                <div className="grow">
-                  <div className="flex w-full justify-end">
-                    {item.adminid === data.uid ? (
-                      <button className="font-pop font-medium text-white bg-orange-500 px-8 py-[4px] rounded-lg">
-                        Own
-                      </button>
-                    ) : groupadded.includes(item.groupID + data.uid) ? (
-                      <button className="font-pop font-medium text-white bg-green-500 px-8 py-[4px] rounded-lg">
-                        Joined
-                      </button>
-                    ) : groupGoinList.includes(item.groupID + data.uid) ? (
-                      <button
-                        onClick={() => deletGroupRequest(item, data.uid)}
-                        className="font-pop font-medium text-white bg-red-500 px-8 py-[4px] rounded-lg"
-                      >
-                        Cancel
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleGroupJoinRequest(item)}
-                        className="font-pop font-medium text-white bg-blue-500 px-8 py-[4px] rounded-lg"
-                      >
-                        Join
-                      </button>
-                    )}
-                  </div>
+                <div className="flex grow justify-end">
+                  {item.adminid === data.uid ? (
+                    <button className="inline-block rounded-full bg-primary px-4 py-1 text-[12px] font-semibold text-white shadow-btn">
+                      Own
+                    </button>
+                  ) : groupadded.includes(item.groupID + data.uid) ? (
+                    <button className="inline-block rounded-full bg-primary px-4 py-1 text-[12px] font-semibold text-white shadow-btn">
+                      Joined
+                    </button>
+                  ) : groupGoinList.includes(item.groupID + data.uid) ? (
+                    <button
+                      onClick={() => deletGroupRequest(item, data.uid)}
+                      className="inline-block rounded-full bg-primary px-4 py-1 text-[12px] font-semibold text-white shadow-btn"
+                    >
+                      Cancel
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleGroupJoinRequest(item)}
+                      className="inline-block rounded-full bg-primary px-4 py-1 text-[12px] font-semibold text-white shadow-btn"
+                    >
+                      Join
+                    </button>
+                  )}
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -390,20 +382,3 @@ const Grouplist = () => {
 };
 
 export default Grouplist;
-// {data.uid === item.adminid ? (
-//   <button className="font-pop font-medium text-white bg-blue-500 px-8 py-[4px] rounded-lg">
-//     Joined
-//   </button>
-// ) : groupGoinList.includes(item.adminid + data.uid) ||
-//   groupGoinList.includes(data.uid + item.adminid) ? (
-//   <button className="font-pop font-medium text-white bg-red-500 px-8 py-[4px] rounded-lg">
-//     Requested
-//   </button>
-// ) : (
-//   <button
-//     onClick={() => handleGroupJoinRequest(item)}
-//     className="font-pop font-medium text-white bg-greenLight px-8 py-[4px] rounded-lg"
-//   >
-//     Join
-//   </button>
-// )}
